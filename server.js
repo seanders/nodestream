@@ -12,7 +12,6 @@ app.use(logfmt.requestLogger());
 //set up server routing
 app.get("/", function(request, response) {
   var content = fs.readFileSync("template.html");
-  content = content.toString('utf8').replace("{{INITIAL_TWEETS}}", ul);
   response.setHeader("Content-Type", 'text/html')
   response.send(content);
   // getTweets(function(tweets) {
