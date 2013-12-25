@@ -1,7 +1,6 @@
 //initialize required modules
 var http = require('http')
 var fs = require("fs");
-var config = JSON.parse(fs.readFileSync("config.json"));
 var port = process.env.PORT || 5000;
 var express = require("express")
 var app = express();
@@ -56,31 +55,28 @@ function getTweets (callback) {
 }
 
 //logic to stream new tweets
+var twitter = new ntwitter({
+    consumer_key: process.env.consumer_key,
+    consumer_secret: process.env.consumer_secret,
+    access_token_key: process.env.access_token_key,
+    access_token_secret: process.env.access_token_secret
+});
 
-fs.readFile('twitter_auth.json', function(auth_error, config) {
-  var twitter_config = JSON.parse(config);
-  var twitter = new ntwitter({
-      consumer_key: twitter_config.consumer_key,
-      consumer_secret: twitter_config.consumer_secret,
-      access_token_key: twitter_config.access_token_key,
-      access_token_secret: twitter_config.access_token_secret
-  });
-
-  twitter.verifyCredentials(function (err, data) {
-    if (!err) {
-      console.log(data.name + " has successfully been authenticated");
-    }
-  }).
-  stream('statuses/filter', {track: 'Jon Kitna'}, function(stream) {
-    stream.on('data', function(tweet) {
-      io.sockets.emit('tweet', tweet);
-      tweetCollection.insert(tweet, function(error) {
-        if (error) {
-          console.log("Oh no an error:", error);
-        } else {
-          console.log("Succesfully inserted tweet");
-        }
-      });
+twitter.verifyCredentials(function (err, data) {
+  if (!err) {
+    console.log(data.name + " has successfully been authenticated");
+  }
+}).
+stream('statuses/filter', {track: 'Jon Kitna'}, function(stream) {
+  stream.on('data', function(tweet) {
+    io.sockets.emit('tweet', tweet);
+    tweetCollection.insert(tweet, function(error) {
+      if (error) {
+        console.log("Oh no an error:", error);
+      } else {
+        console.log("Succesfully inserted tweet");
+      }
     });
   });
 });
+
