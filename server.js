@@ -2,12 +2,13 @@
 var http = require('http')
 var fs = require("fs");
 var config = JSON.parse(fs.readFileSync("config.json"));
-var host = config.host;
-var port = config.port;
+var port = process.env.PORT || 5000;
 var express = require("express")
 var app = express();
 var ntwitter = require("ntwitter");
+var logfmt = require("logfmt");
 
+app.use(logfmt.requestLogger());
 
 //set up server routing
 app.get("/", function(request, response) {
@@ -27,7 +28,7 @@ app.get("/", function(request, response) {
 //starts the server
 var server = http.createServer(app);
 var io = require('socket.io').listen(server);
-server.listen(port, host);
+server.listen(port);
 
 
 //initialize connection to database
