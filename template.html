@@ -10,7 +10,7 @@
     </ul>
 
     <script type="text/javascript">
-      var socket = io.connect('http://127.0.0.1:1339');
+      var socket = io.connect('http://nodestream.herokuapp.com/');
       var ul = document.getElementById("tweets");
       socket.on('tweet', function (tweet) {
         var li = document.createElement("li");
